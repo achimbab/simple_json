@@ -188,8 +188,29 @@ namespace json {
             }
         }
 
+        /*
+         * TODO: memory management
+        ~JSONValue() {
+            switch (type_) {
+            case OBJECT:
+                delete v_.o_;
+                break;
+            case ARRAY:
+                delete v_.a_;
+                break;
+            case STRING:
+                delete v_.s_;
+                break;
+            }
+        }
+        */
+
         void put(std::string s, JSONValue v) {
             v_.o_->insert(std::make_pair(s, v));
+        }
+
+        void add(JSONValue v) {
+            v_.a_->push_back(v);
         }
 
         void set(const char* s) {
@@ -254,8 +275,10 @@ namespace json {
                 Token vsep = scanner_.nextToken();
                 if (vsep.getType() == END_OBJECT) {
                     break;
-                } else if (vsep.getType() != VALUE_SEPARATOR) {
-                    // TODO: exception
+                } else if (vsep.getType() == VALUE_SEPARATOR) {
+                    continue;
+                } else {
+                    // TODO : exception
                     return v;
                 }
             }
@@ -265,6 +288,21 @@ namespace json {
 
         JSONValue readArray() {
             JSONValue v(ARRAY);
+
+            while (true) {
+                JSONValue value = readValue();
+                v.add(value);
+                Token vsep = scanner_.nextToken();
+                if (vsep.getType() == BEGIN_ARRAY) {
+                    break;
+                } else if (vsep.getType() == VALUE_SEPARATOR) {
+                    continue;
+                } else {
+                    // TODO: exception
+                    return v;
+                }
+            }
+
             return v;
         }
 
