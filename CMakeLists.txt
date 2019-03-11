@@ -1,1 +1,1 @@
-ADD_EXECUTABLE(calc.out json.cpp calc.cpp)
+ADD_EXECUTABLE(example.out json.cpp example.cpp)

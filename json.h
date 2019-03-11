@@ -10,7 +10,6 @@
 
 namespace json {
 
-    // forward declaration
     class JSONValue;
 
     typedef std::map<std::string, JSONValue> object_t;
