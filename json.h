@@ -8,6 +8,11 @@
 
 #include <cstring>
 
+/**
+ * TODO
+ * use move semantics
+ */
+
 namespace json {
 
     class JSONValue;
@@ -187,8 +192,58 @@ namespace json {
             }
         }
 
-        /*
-         * TODO: memory management
+        JSONValue(const JSONValue& other) : type_(other.type_) {
+            switch (type_) {
+            case OBJECT:
+                v_.o_ = new object_t;
+                for(auto kv : *(other.v_.o_)) {
+                    put(kv.first, kv.second);
+                }
+                break;
+            case ARRAY:
+                v_.a_ = new array_t;
+                for(auto v : *(other.v_.a_)) {
+                    add(v);
+                }
+                break;
+            case STRING:
+                set(strdup(other.v_.s_));
+                break;
+            case INTEGER:
+                set(other.v_.i_);
+                break;
+            }
+        }
+
+        JSONValue& operator=(const JSONValue& other) {
+            if(&other == this) {
+                return *this;
+            }
+
+            switch (type_) {
+            case OBJECT:
+                v_.o_ = new object_t;
+                for(auto kv : *(other.v_.o_)) {
+                    put(kv.first, kv.second);
+                }
+                break;
+            case ARRAY:
+                v_.a_ = new array_t;
+                for(auto v : *(other.v_.a_)) {
+                    add(v);
+                }
+                break;
+            case STRING:
+                set(strdup(other.v_.s_));
+                break;
+            case INTEGER:
+                set(other.v_.i_);
+                break;
+            }
+
+            return *this;
+        }
+
         ~JSONValue() {
             switch (type_) {
             case OBJECT:
@@ -202,7 +257,6 @@ namespace json {
                 break;
             }
         }
-        */
 
         void put(std::string s, JSONValue v) {
             v_.o_->insert(std::make_pair(s, v));
