@@ -168,6 +168,58 @@ public:
     }
 };
 
+typedef map<string, SetOption> set_options_t;
+typedef map<string, int> words_t;
+
+void add_setoptions(Stats &stats, set_options_t &setOptions, Equip b, Equip h, Equip g, Equip w, Equip s) {
+    // Count set
+    words_t sets;
+    
+    auto it = sets.find(b.set);
+    if (it == sets.end()) {
+        sets.insert(make_pair(b.set, 1));
+    } else {
+        it->second++;
+    }
+
+    it = sets.find(h.set);
+    if (it == sets.end()) {
+        sets.insert(make_pair(h.set, 1));
+    } else {
+        it->second++;
+    }
+
+    it = sets.find(g.set);
+    if (it == sets.end()) {
+        sets.insert(make_pair(g.set, 1));
+    } else {
+        it->second++;
+    }
+
+    it = sets.find(w.set);
+    if (it == sets.end()) {
+        sets.insert(make_pair(w.set, 1));
+    } else {
+        it->second++;
+    }
+
+    it = sets.find(s.set);
+    if (it == sets.end()) {
+        sets.insert(make_pair(s.set, 1));
+    } else {
+        it->second++;
+    }
+
+    for (auto set : sets) {
+        cout << "Sets: " << set.first << "-" << set.second << endl;
+
+        auto opt = setOptions.find(set.first);
+        for (int i = 0; i < set.second; i++) {
+            stats += opt->second.stats[i];
+        }
+    }
+}
+
 int combine_equips() {
     // Read JSON from a file
     string buf;
@@ -190,7 +242,7 @@ int combine_equips() {
     print(value, 0);
 
     vector<Equip> equips;
-    map<string, SetOption> setOptions;
+    set_options_t setOptions;
 
     // Load equipments
     auto equipsSource = value.v_.o_->find("Equipments");
@@ -234,12 +286,14 @@ int combine_equips() {
                     for (auto g : equips) {
                         if (g.part == GLOVES) {
                             for (auto w : equips) {
-                                if (w.part == GLOVES) {
+                                if (w.part == WAIST) {
                                     for (auto s : equips) {
-                                        if (s.part == GLOVES) {
+                                        if (s.part == SHOES) {
                                             Stats total = b.stats + h.stats + g.stats + w.stats + s.stats;
-                                            cout << "\nTOTAL: " << total << endl;
+                                            cout << endl;
                                             cout << b << endl  << h << endl << g << endl << w << endl << s << endl;
+                                            add_setoptions(total, setOptions, b, h, g, w, s);
+                                            cout << "TOTAL: " << total << endl;
                                         }
                                     }
                                 }

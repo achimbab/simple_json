@@ -109,6 +109,16 @@
         },
 
         {
+            "Set":"Amaterasu",
+            "Count":3,
+            "Strength":0,
+            "Vitality":100,
+            "Intelligence":0,
+            "MagReg":0,
+            "PhyReg":0
+        },
+
+        {
             "Set":"Phoenix",
             "Count":2,
             "Strength":0,
